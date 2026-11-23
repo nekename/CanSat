@@ -1,10 +1,10 @@
 use lis3mdl::{FullScale, Lis3mdl as Lis3mdlDriver, MeasurementMode, OperatingMode};
 
-pub use lis3mdl::I32xyz;
-
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, serde::Serialize)]
 pub struct Lis3mdlReading {
-    pub magnetic_mgauss: I32xyz,
+    pub magnetic_x_mgauss: i32,
+    pub magnetic_y_mgauss: i32,
+    pub magnetic_z_mgauss: i32,
 }
 
 pub fn init_lis3mdl<I2C, E>(i2c: I2C) -> Result<Lis3mdlDriver<I2C>, lis3mdl::Error>
@@ -27,7 +27,10 @@ where
     I2C: embedded_hal_0_2::blocking::i2c::Write<Error = E>
         + embedded_hal_0_2::blocking::i2c::WriteRead<Error = E>,
 {
+    let magnetic = sensor.get_mag_axes_mgauss()?;
     Ok(Lis3mdlReading {
-        magnetic_mgauss: sensor.get_mag_axes_mgauss()?,
+        magnetic_x_mgauss: magnetic.x,
+        magnetic_y_mgauss: magnetic.y,
+        magnetic_z_mgauss: magnetic.z,
     })
 }

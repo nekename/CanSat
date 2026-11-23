@@ -4,7 +4,7 @@ use lsm6dsox::{
     AccelerometerScale, DataRate, GyroscopeScale, Lsm6dsox as Lsm6dsoxDriver, SlaveAddress,
 };
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, serde::Serialize)]
 pub struct Lsm6dsoxReading {
     pub accel_x_g: i32,
     pub accel_y_g: i32,

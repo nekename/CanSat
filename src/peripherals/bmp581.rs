@@ -7,7 +7,7 @@ use bmp581::{
 use embedded_hal::delay::DelayNs;
 use embedded_hal::i2c::I2c;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, serde::Serialize)]
 pub struct Bmp581Reading {
     pub temperature_c: f32,
     pub pressure_pa: f32,

@@ -3,7 +3,7 @@ use nmea::{Nmea, SentenceType};
 
 pub const PA1010D_I2C_ADDRESS: u8 = 0x10;
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, serde::Serialize)]
 pub struct Pa1010dReading {
     pub latitude_deg: Option<f64>,
     pub longitude_deg: Option<f64>,

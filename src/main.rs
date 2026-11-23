@@ -19,6 +19,15 @@ use esp_idf_hal::{
     peripherals::Peripherals,
     units::Hertz,
 };
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+pub struct DataFrame {
+    pub bmp: peripherals::bmp581::Bmp581Reading,
+    pub lis: peripherals::lis3mdl::Lis3mdlReading,
+    pub imu: peripherals::lsm6dsox::Lsm6dsoxReading,
+    pub gps: peripherals::pa1010d::Pa1010dReading,
+}
 
 fn main() -> anyhow::Result<()> {
     // It is necessary to call this function once. Otherwise, some patches to the runtime
@@ -58,27 +67,12 @@ fn main() -> anyhow::Result<()> {
         let gps = collect_pa1010d(&mut pa1010d)
             .map_err(|error| anyhow::anyhow!("PA1010D read failed: {error:?}"))?;
 
-        log::info!(
-            "BMP581: {:.2} C, {:.2} Pa | LIS3MDL: {}, {}, {} mgauss | LSM6DSOX: acc ({}, {}, {}) g, gyro ({}, {}, {}) mdps | GPS: lat {:?}, lon {:?}, alt {:?} m, sats {:?}, speed {:?} m/s, course {:?}, fix {}",
-            bmp.temperature_c,
-            bmp.pressure_pa,
-            lis.magnetic_mgauss.x,
-            lis.magnetic_mgauss.y,
-            lis.magnetic_mgauss.z,
-            imu.accel_x_g,
-            imu.accel_y_g,
-            imu.accel_z_g,
-            imu.gyro_x_mdps,
-            imu.gyro_y_mdps,
-            imu.gyro_z_mdps,
-            gps.latitude_deg,
-            gps.longitude_deg,
-            gps.altitude_m,
-            gps.satellites,
-            gps.speed_mps,
-            gps.course_deg,
-            gps.fix_valid,
-        );
+        let mut buffer = Vec::new();
+        let mut serializer = rmp_serde::Serializer::new(&mut buffer);
+        let data = DataFrame { bmp, lis, imu, gps };
+        data.serialize(&mut serializer)
+            .map_err(|error| anyhow::anyhow!("Serialization failed: {error:?}"))?;
+        println!("{:02x?}", buffer);
 
         thread::sleep(Duration::from_millis(100));
     }
