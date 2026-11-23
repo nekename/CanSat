@@ -21,6 +21,14 @@ log = "0.4"
 esp-idf-svc = { version = "0.53", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
 # Remove `generic-queue-8` if you plan to use `embassy-time` WITH `embassy-executor`
 embassy-time = { version = "0.5", features = ["generic-queue-8"] }
+embedded-hal = "1"
+embedded-hal-0-2 = { package = "embedded-hal", version = "0.2" }
+esp-idf-hal = "0.47"
+anyhow = "1"
+bmp581 = "0.1"
+lsm6dsox = "2.1"
+lis3mdl = "0.1"
+nmea = "0.8"
 
 [build-dependencies]
 embuild = "0.33.5"
