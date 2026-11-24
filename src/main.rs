@@ -108,13 +108,22 @@ fn main() -> anyhow::Result<()> {
         .map_err(|error| anyhow::anyhow!("LoRa initialization failed: {error:?}"))?;
     let mut frame_number = 0_u64;
 
+    while collect_lsm6dsox(&mut lsm6dsox)
+        .map_err(|error| anyhow::anyhow!("LSM6DSOX read failed: {error:?}"))?
+        .is_none()
+    {
+        log::debug!("LSM6DSOX not yet ready; skipping this cycle");
+        thread::sleep(Duration::from_millis(10));
+    }
+
     loop {
         let bmp = collect_bmp581(&mut bmp581)
             .map_err(|error| anyhow::anyhow!("BMP581 read failed: {error:?}"))?;
         let lis = collect_lis3mdl(&mut lis3mdl)
             .map_err(|error| anyhow::anyhow!("LIS3MDL read failed: {error:?}"))?;
         let imu = collect_lsm6dsox(&mut lsm6dsox)
-            .map_err(|error| anyhow::anyhow!("LSM6DSOX read failed: {error:?}"))?;
+            .map_err(|error| anyhow::anyhow!("LSM6DSOX read failed: {error:?}"))?
+            .unwrap();
         let gps = collect_pa1010d(&mut pa1010d)
             .map_err(|error| anyhow::anyhow!("PA1010D read failed: {error:?}"))?;
 

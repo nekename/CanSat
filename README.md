@@ -72,12 +72,14 @@ GPIO 26 through 32 are reserved internally on the ESP32-S3 for flash/PSRAM and G
 
 - LSM6DSOX accelerometer and gyroscope:
 	- [lsm6dsox Rust crate](https://crates.io/crates/lsm6dsox)
+		- Crate uses incorrect scaling factor for ±16 g so this is manually adjusted
 	- Full scale:
 		- Accelerometer: ±16 g (0.488 milli-g/LSB) as CanSat experiences acceleration of up to 20 g
 		- Gyroscope: ±2000 dps (70 mdps/LSB) as CanSat can tumble rapidly
 	- Output data rate: 104 Hz (rapid polling for accurately timed event triggers)
 - LIS3MDL magnetometer:
 	- [lis3mdl Rust crate](https://crates.io/crates/lis3mdl)
+		- Crate uses incorrect I2C address so this is manually corrected
 	- Full scale: ±16 gauss (permanent magnets and BLDC motor coils create high noise)
 	- Output data rate: 40 Hz (25ms period)
 
